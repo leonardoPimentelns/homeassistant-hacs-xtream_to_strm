@@ -1,9 +1,0 @@
-{
-  "domain": "xtream_to_strm",
-  "name": "Stream to Strm",
-  "documentation": "https://github.com/seu-repo/stream_manager",
-  "dependencies": [],
-  "codeowners": ["@seu-usuario"],
-  "requirements": ["requests"],
-  "version": "1.0.0"
-}
