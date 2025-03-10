@@ -48,8 +48,13 @@ class StreamManagerSensor(SensorEntity):
         os.makedirs(os.path.join(self._strm_folder, "movies"), exist_ok=True)
         os.makedirs(os.path.join(self._strm_folder, "live"), exist_ok=True)
 
-        # Agendar atualização nos horários definidos pelo usuário
+        # ⚡ Forçar primeira atualização imediatamente
+        _LOGGER.info(f"Executando atualização inicial para {sensor_type}...")
+        self.update()
+
+        # Agendar atualizações futuras conforme configuração
         self.schedule_updates()
+
 
     def load_history(self):
         """Carrega o histórico salvo."""
