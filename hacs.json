@@ -1,0 +1,11 @@
+{
+  "name": "Stream to Strm",
+  "author": "SeuNomeOuGitHub",
+  "description": "Gerencia filmes, séries e canais de streaming via API externa",
+  "domain": "stream_manager",
+  "homeassistant": "2023.1.0",
+  "country": "BR",
+  "codeowners": ["@SeuGitHub"],
+  "requirements": [],
+  "version": "1.0.0"
+}
