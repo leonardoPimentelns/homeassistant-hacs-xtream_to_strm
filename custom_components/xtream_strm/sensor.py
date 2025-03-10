@@ -7,8 +7,6 @@ from homeassistant.components.sensor import SensorEntity
 
 _LOGGER = logging.getLogger(__name__)
 
-HISTORY_FILE = "/media/plex/history.json"
-
 def sanitize_filename(name):
     """Remove caracteres inválidos de um nome de arquivo."""
     return re.sub(r'[^a-zA-Z0-9_\-\s]', '', name).strip()
@@ -27,7 +25,7 @@ def fetch_data(api_url, username, password, action):
 class StreamManagerSensor(SensorEntity):
     """Sensor para monitorar novos streams."""
     
-    def __init__(self, sensor_type, api_url, username, password):
+    def __init__(self, sensor_type, api_url, username, password, strm_folder):
         """Inicializa o sensor."""
         self._attr_name = f"Stream Manager {sensor_type.capitalize()}"
         self._attr_unique_id = f"stream_manager_{sensor_type}_{username}"
@@ -35,14 +33,21 @@ class StreamManagerSensor(SensorEntity):
         self._api_url = api_url
         self._username = username
         self._password = password
+        self._strm_folder = strm_folder
+        self._history_file = os.path.join(strm_folder, "history.json")
         self._state = None
         self._history = self.load_history()
 
+        # Criar pastas se não existirem
+        os.makedirs(os.path.join(self._strm_folder, "series"), exist_ok=True)
+        os.makedirs(os.path.join(self._strm_folder, "movies"), exist_ok=True)
+        os.makedirs(os.path.join(self._strm_folder, "live"), exist_ok=True)
+
     def load_history(self):
         """Carrega o histórico salvo."""
-        if os.path.exists(HISTORY_FILE):
+        if os.path.exists(self._history_file):
             try:
-                with open(HISTORY_FILE, "r") as f:
+                with open(self._history_file, "r") as f:
                     return json.load(f)
             except json.JSONDecodeError:
                 return {"series": {}, "movies": [], "live": {}}
@@ -50,7 +55,7 @@ class StreamManagerSensor(SensorEntity):
 
     def save_history(self):
         """Salva o histórico atualizado."""
-        with open(HISTORY_FILE, "w") as f:
+        with open(self._history_file, "w") as f:
             json.dump(self._history, f, indent=4)
 
     def update(self):
@@ -97,13 +102,14 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     api_url = config.get("api_url")
     username = config.get("username")
     password = config.get("password")
+    strm_folder = config.get("strm_folder")
 
-    if not api_url or not username or not password:
-        _LOGGER.error("É necessário fornecer api_url, username e password na configuração do sensor!")
+    if not api_url or not username or not password or not strm_folder:
+        _LOGGER.error("É necessário fornecer api_url, username, password e strm_folder na configuração do sensor!")
         return
 
     async_add_entities([
-        StreamManagerSensor("series", api_url, username, password),
-        StreamManagerSensor("movies", api_url, username, password),
-        StreamManagerSensor("live", api_url, username, password),
+        StreamManagerSensor("series", api_url, username, password, strm_folder),
+        StreamManagerSensor("movies", api_url, username, password, strm_folder),
+        StreamManagerSensor("live", api_url, username, password, strm_folder),
     ])
