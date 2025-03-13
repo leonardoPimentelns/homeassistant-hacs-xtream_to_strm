@@ -1,8 +1,8 @@
 {
   "name": "Stream to Strm",
-  "author": "SeuNomeOuGitHub",
+  "author": "LeonardoPimentel",
   "description": "Gerencia filmes, séries e canais de streaming via API externa",
-  "domain": "stream_manager",
+  "domain": "xtream_to_strm",
   "homeassistant": "2023.1.0",
   "country": "BR",
   "codeowners": ["@SeuGitHub"],
